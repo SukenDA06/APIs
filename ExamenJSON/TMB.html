@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Líneas de Metro</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    .linea {
+      margin: 10px 0;
+      cursor: pointer;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+    }
+    .linea:hover {
+      background-color: #f1f1f1;
+    }
+    .info {
+      display: none;
+      margin-top: 10px;
+      padding-left: 20px;
+    }
+    .estaciones {
+      margin-top: 5px;
+      padding-left: 20px;
+    }
+    .color {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Líneas de Metro</h1>
+  <div id="lineas-container"></div>
+
+  <script>
+    // Cargar el archivo JSON externo
+    fetch('lineas.json')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Error al cargar el archivo JSON');
+        }
+        return response.json();
+      })
+      .then(lineas => {
+        // Referencia al contenedor
+        const container = document.getElementById('lineas-container');
+
+        // Crear la lista de líneas
+        for (const key in lineas) {
+          const linea = lineas[key];
+
+          // Crear el elemento principal de la línea
+          const lineaDiv = document.createElement('div');
+          lineaDiv.className = 'linea';
+          lineaDiv.textContent = linea.nombre;
+
+          // Crear el contenedor de información
+          const infoDiv = document.createElement('div');
+          infoDiv.className = 'info';
+
+          // Agregar el color de la línea
+          const colorDiv = document.createElement('div');
+          colorDiv.className = 'color';
+          colorDiv.textContent = `Color: ${linea.color}`;
+          infoDiv.appendChild(colorDiv);
+
+          // Agregar la lista de estaciones
+          const estacionesDiv = document.createElement('div');
+          estacionesDiv.className = 'estaciones';
+          estacionesDiv.textContent = 'Estaciones:';
+          const estacionesList = document.createElement('ul');
+          linea.estacions.forEach(estacion => {
+            const estacionItem = document.createElement('li');
+            estacionItem.textContent = estacion;
+            estacionesList.appendChild(estacionItem);
+          });
+          estacionesDiv.appendChild(estacionesList);
+          infoDiv.appendChild(estacionesDiv);
+
+          // Agregar el contenedor de información al elemento principal
+          lineaDiv.appendChild(infoDiv);
+
+          // Agregar evento de clic para expandir/colapsar
+          lineaDiv.addEventListener('click', () => {
+            infoDiv.style.display = infoDiv.style.display === 'none' ? 'block' : 'none';
+          });
+
+          // Agregar la línea al contenedor
+          container.appendChild(lineaDiv);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  </script>
+</body>
+</html>
