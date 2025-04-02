@@ -3,54 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="TMB.css" rel="stylesheet" type="text/css" />
   <title>Líneas de Metro</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-    }
-    h1 {
-      text-align: center;
-    }
-    .linea {
-      margin: 10px 0;
-      cursor: pointer;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      background-color: #f9f9f9;
-    }
-    .linea:hover {
-      background-color: #f1f1f1;
-    }
-    .info {
-      display: none;
-      margin-top: 10px;
-      padding-left: 20px;
-    }
-    .estaciones {
-      margin-top: 5px;
-      padding-left: 20px;
-    }
-    .color {
-      font-weight: bold;
-    }
-  </style>
 </head>
 <body>
   <h1>Líneas de Metro</h1>
   <div id="lineas-container"></div>
 
   <script>
-    // Cargar el archivo JSON externo
-    fetch('lineas.json')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Error al cargar el archivo JSON');
-        }
-        return response.json();
-      })
-      .then(lineas => {
+    // Función para cargar un archivo JSON
+    const loadJSON = (url) => fetch(url).then(response => {
+      if (!response.ok) {
+        throw new Error(`Error al cargar el archivo JSON: ${url}`);
+      }
+      return response.json();
+    });
+
+    // Cargar ambos JSON
+    Promise.all([loadJSON('lineas.json'), loadJSON('estaciones.json')])
+      .then(([lineas, estaciones]) => {
+        // Crear un mapa de estaciones por nombre
+        const estacionesMap = {};
+        estaciones.features.forEach(feature => {
+          const nombreEstacion = feature.properties.NOM_ESTACIO;
+          estacionesMap[nombreEstacion] = feature;
+        });
+
         // Referencia al contenedor
         const container = document.getElementById('lineas-container');
 
@@ -77,19 +55,49 @@
           const estacionesDiv = document.createElement('div');
           estacionesDiv.className = 'estaciones';
           estacionesDiv.textContent = 'Estaciones:';
-          const estacionesList = document.createElement('ul');
           linea.estacions.forEach(estacion => {
-            const estacionItem = document.createElement('li');
-            estacionItem.textContent = estacion;
-            estacionesList.appendChild(estacionItem);
+            // Crear contenedor principal para cada estación
+            const estacionDiv = document.createElement('div');
+            estacionDiv.className = 'estacion';
+            estacionDiv.textContent = estacion;
+
+            // Crear contenedor para información adicional de la estación
+            const estacionInfoDiv = document.createElement('div');
+            estacionInfoDiv.className = 'estacion-info';
+            estacionInfoDiv.style.display = 'none'; // Ocultar inicialmente
+
+            // Buscar datos adicionales de la estación en el mapa
+            const estacionData = estacionesMap[estacion];
+            if (estacionData) {
+              const { ID_ESTACIO, CODI_GRUP_ESTACIO, geometry } = estacionData.properties;
+              const [longitud, latitud] = estacionData.geometry.coordinates;
+
+              // Agregar información adicional al contenedor
+              estacionInfoDiv.innerHTML = `
+                <p><strong>ID:</strong> ${ID_ESTACIO}</p>
+                <p><strong>Código de Grupo:</strong> ${CODI_GRUP_ESTACIO}</p>
+                <p><strong>Coordenadas:</strong> (${latitud}, ${longitud})</p>
+              `;
+            } else {
+              estacionInfoDiv.textContent = 'Información no disponible.';
+            }
+
+            // Agregar evento de clic para expandir/colapsar la información
+            estacionDiv.addEventListener('click', (e) => {
+              e.stopPropagation(); // Evitar que el clic afecte a otros eventos
+              estacionInfoDiv.style.display = estacionInfoDiv.style.display === 'none' ? 'block' : 'none';
+            });
+
+            // Añadir el contenedor de información al contenedor principal de la estación
+            estacionDiv.appendChild(estacionInfoDiv);
+            estacionesDiv.appendChild(estacionDiv);
           });
-          estacionesDiv.appendChild(estacionesList);
           infoDiv.appendChild(estacionesDiv);
 
           // Agregar el contenedor de información al elemento principal
           lineaDiv.appendChild(infoDiv);
 
-          // Agregar evento de clic para expandir/colapsar
+          // Agregar evento de clic para expandir/colapsar la línea
           lineaDiv.addEventListener('click', () => {
             infoDiv.style.display = infoDiv.style.display === 'none' ? 'block' : 'none';
           });

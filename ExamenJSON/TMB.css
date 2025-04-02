@@ -1,0 +1,48 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+h1 {
+    text-align: center;
+}
+.linea {
+    margin: 10px 0;
+    cursor: pointer;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+.linea:hover {
+    background-color: #f1f1f1;
+}
+.info {
+    display: none;
+    margin-top: 10px;
+    padding-left: 20px;
+}
+.estaciones {
+    margin-top: 5px;
+    padding-left: 20px;
+}
+.color {
+    font-weight: bold;
+}
+.estacion {
+    margin: 5px 0;
+    cursor: pointer;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    background-color: #fefefe;
+}
+.estacion:hover {
+    background-color: #f5f5f5;
+}
+.estacion-info {
+    margin-top: 5px;
+    padding-left: 15px;
+    font-size: 0.9em;
+    color: #555;
+    display: none;
+}
