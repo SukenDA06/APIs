@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="TMB.css" rel="stylesheet" type="text/css" />
-  <title>Líneas de Metro</title>
+  <title>LíneasMetro</title>
 </head>
 <body>
-  <h1>Líneas de Metro</h1>
+  <h1>Líneas de Metro Barcelona</h1>
   <div id="lineas-container"></div>
 
   <script>
-    // Función para cargar un archivo JSON
+    //Función para cargar un archivo JSON
     const loadJSON = (url) => fetch(url).then(response => {
       if (!response.ok) {
         throw new Error(`Error al cargar el archivo JSON: ${url}`);
@@ -19,7 +19,7 @@
       return response.json();
     });
 
-    // Cargar ambos JSON
+    //Cargar ambos JSON
     Promise.all([loadJSON('lineas.json'), loadJSON('estaciones.json')])
       .then(([lineas, estaciones]) => {
         // Crear un mapa de estaciones por nombre
@@ -49,6 +49,7 @@
           const colorDiv = document.createElement('div');
           colorDiv.className = 'color';
           colorDiv.textContent = `Color: ${linea.color}`;
+          // Lo vuelve parte del div infoDiv
           infoDiv.appendChild(colorDiv);
 
           // Agregar la lista de estaciones
@@ -69,7 +70,7 @@
             // Buscar datos adicionales de la estación en el mapa
             const estacionData = estacionesMap[estacion];
             if (estacionData) {
-              const { ID_ESTACIO, CODI_GRUP_ESTACIO, geometry } = estacionData.properties;
+              const { ID_ESTACIO, CODI_GRUP_ESTACIO} = estacionData.properties;
               const [longitud, latitud] = estacionData.geometry.coordinates;
 
               // Agregar información adicional al contenedor
